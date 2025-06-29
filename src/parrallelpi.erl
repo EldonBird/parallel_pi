@@ -4,10 +4,14 @@
 %%% @doc
 %%%
 %%% @end
-%%% Created : 28. Jun 2025 19:16
+%%% Created : 28. Jun 2025 21:47
 %%%-------------------------------------------------------------------
--module(sup_all).
+-module(parrallelpi).
 -author("Eldon").
 
 %% API
--export([]).
+-export([start/0]).
+
+start() ->
+    gen_sup:start_link().
+
