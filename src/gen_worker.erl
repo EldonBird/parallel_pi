@@ -1,4 +1,4 @@
-﻿%%%-------------------------------------------------------------------
+%%%-------------------------------------------------------------------
 %%% @author Eldon
 %%% @copyright (C) 2025, Eldon Bait and Tackle
 %%% @doc
@@ -14,7 +14,14 @@
 % State = [{inside_count, total_count}}, ...]
 
 %% API
--export([start_link/0, calculate/2, get_all/0, get_result/0]).
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    terminate/2,
+    start_link/0
+]).
+
 
 init([]) ->
     {ok, []}.
@@ -27,14 +34,14 @@ start_link() ->
 %% apparnetly I dont really need these since I am calling them directly from my manager function, I am going to leave them in,
 %% as decoration though!
 
-calculate(Start, End) ->
-    gen_server:cast(?MODULE, {calculate, Start, End}).
+% calculate(Start, End) ->
+%    gen_server:cast(?MODULE, {calculate, Start, End}).
 
-get_result() ->
-    gen_server:call(?MODULE, {last}).
+% get_result() ->
+%     gen_server:call(?MODULE, {last}).
 
-get_all() ->
-    gen_server:call(?MODULE, {all}).
+% get_all() ->
+%     gen_server:call(?MODULE, {all}).
 
 % Handle Casts and Calls,
 

@@ -1,0 +1,10 @@
+{application, parallelpi,
+ [
+  {description, "Monte Carlo Parallel Pi Estimation"},
+  {vsn, "0.1.0"},
+  {modules, [parallelpi, gen_manager, gen_worker, gen_sup, man_sup]},
+  {registered, [gen_manager, gen_sup]},
+  {mod, {parallelpi, []}},
+  {applications, [kernel, stdlib]}
+ ]}.
+

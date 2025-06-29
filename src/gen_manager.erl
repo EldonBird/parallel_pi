@@ -1,4 +1,4 @@
-﻿%%%-------------------------------------------------------------------
+%%%-------------------------------------------------------------------
 %%% @author Eldon
 %%% @copyright (C) 2025, <COMPANY>
 %%% @doc
@@ -11,11 +11,19 @@
 -behavior(gen_server).
 
 %% API
--export([start_link/0, run_calculation/2]).
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    start_link/0,
+    run_calculation/2
+]).
 
 init([]) ->
     {ok, []}.
 
+terminate() ->
+    {ok, []}.
 
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
@@ -53,7 +61,7 @@ handle_call({run, PointsPerWorker, NumWorkers}, _From, State) ->
 
 
 give_work([], _, _) ->
-    ok.
+    ok;
 give_work([Head | Tail], Amount, Starting_Point) ->
     gen_server:cast(Head, {calculate, Starting_Point, Starting_Point + Amount}),
     give_work(Tail, Amount, Starting_Point + Amount).
