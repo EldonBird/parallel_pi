@@ -1,4 +1,4 @@
-﻿%%%-------------------------------------------------------------------
+%%%-------------------------------------------------------------------
 %%% @author Eldon
 %%% @copyright (C) 2025, <COMPANY>
 %%% @doc
@@ -7,12 +7,13 @@
 %%% Created : 29. Jun 2025 22:20
 %%%-------------------------------------------------------------------
 -module(gen_worker_long).
--behavior(gen_server).
 -author("Eldon").
+-behavior(gen_server).
 
 %% API
 -export([
   handle_cast/2,
+  handle_call/3,
   init/1,
   terminate/2,
   start_link/0
@@ -36,9 +37,13 @@ handle_cast({long, ManagerPid}, State) ->
   {Prev_Total, Prev_Inside} = State,
   Result = monte_carlo(Jump, Prev_Total),
   gen_server:cast(ManagerPid, {result, Result}),
+  timer:sleep(2),
   gen_server:cast(self(), {long, ManagerPid}),
   {Running_Total, Running_Inside} = Result,
-  {noreply, {Prev_Total + Running_Total, Prev_Inside + Running_Inside}}.
+  {noreply, {Prev_Total + Jump, Prev_Inside + Running_Inside}}.
+
+handle_call({}, _From, State) ->
+  {reply, State, State}.
 
 
 

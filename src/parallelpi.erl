@@ -13,5 +13,5 @@
 -export([start/0]).
 
 start() ->
-    man_sup:start_link().
+    sup_manager_long:start_link().
 

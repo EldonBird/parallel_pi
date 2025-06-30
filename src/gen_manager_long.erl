@@ -1,4 +1,4 @@
-﻿%%%-------------------------------------------------------------------
+%%%-------------------------------------------------------------------
 %%% @author Birdh
 %%% @copyright (C) 2025, <COMPANY>
 %%% @doc
@@ -36,7 +36,7 @@ run(NumberWorkers) ->
     gen_server:cast(?MODULE, {run, NumberWorkers}).
 
 
-handle_cast({run, Number}, State) ->
+handle_cast({run, Number}, _) ->
     Workers = [start_worker() || _ <- lists:seq(1, Number)], 
     assign_work(Workers),
     {noreply, {Workers, {0, 0}}};
@@ -70,7 +70,6 @@ assign_work([Head | Tail]) ->
 calculate_pi(_, 0) ->
     0;
 calculate_pi(Total, Inside) ->
-    Inside_Total = lists:sum(Inside),
-    4 * Inside_Total / Total.
+    4 * Inside / Total.
 
 
