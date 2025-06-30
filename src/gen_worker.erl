@@ -53,12 +53,19 @@ handle_cast({calculate, Start, End}, State) ->
     {noreply, New_State}.
 
 
+
 handle_call({last}, _From, State) ->
     [Result | _] = State,
     {reply, Result, State};
 handle_call({all}, _From, State) ->
-    {reply, State, State}.
-
+    {reply, State, State};
+handle_call({endflag}, _From, State) ->
+    {_, {Inside, Total}} = State,
+    
+    {reply, {Inside, Total},{endflag, {Inside, Total}}},
+    terminate(_, _).
+    
+    
 
 terminate(_Reason, _State) -> ok.
 
@@ -113,6 +120,8 @@ monte_carlo(Origin, EndPoint) ->
 
 
 
+    
+    
 
 
 
