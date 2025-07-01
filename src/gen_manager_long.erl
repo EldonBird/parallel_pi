@@ -38,7 +38,7 @@ run(NumberWorkers) ->
 
 handle_cast({run, Number}, _) ->
     Workers = [start_worker() || _ <- lists:seq(1, Number)], 
-    assign_work(Workers),
+    assign_work(Workers, 1),
     {noreply, {Workers, {0, 0}}};
 handle_cast({result, Result}, State) ->
     {Workers, {Previous_Total, Previous_Inside}} = State,
@@ -60,11 +60,11 @@ start_worker() ->
   Pid.
 
 
-assign_work([]) ->
+assign_work([], _) ->
     ok;
-assign_work([Head | Tail]) ->
-    gen_server:cast(Head, {long, self()}),
-    assign_work(Tail).
+assign_work([Head | Tail], Offset) ->
+    gen_server:cast(Head, {long, self(), Offset}),
+    assign_work(Tail, Offset+1).
 
 
 calculate_pi(_, 0) ->

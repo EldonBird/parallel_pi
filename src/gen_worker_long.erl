@@ -32,14 +32,13 @@ terminate(_Reason, _State) -> ok.
 %                                                  true = on false = off
 % When you are using a long calcuation the state is = {ContinueFlag, {Inside, Total}}
 
-handle_cast({long, ManagerPid}, State) ->
+handle_cast({long, ManagerPid, Offset}, State) ->
   Jump = 1000000,
   {Prev_Total, Prev_Inside} = State,
-  Result = monte_carlo(Jump, Prev_Total),
+  Result = monte_carlo(Jump, Prev_Total + Jump * Offset),
   gen_server:cast(ManagerPid, {result, Result}),
-  timer:sleep(2),
-  gen_server:cast(self(), {long, ManagerPid}),
-  {Running_Total, Running_Inside} = Result,
+  gen_server:cast(self(), {long, ManagerPid, Offset}),
+  {_, Running_Inside} = Result,
   {noreply, {Prev_Total + Jump, Prev_Inside + Running_Inside}}.
 
 handle_call({}, _From, State) ->
