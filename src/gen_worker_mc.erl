@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 29. Jun 2025 22:20
 %%%-------------------------------------------------------------------
--module(gen_worker_long).
+-module(gen_worker_mc).
 -author("Eldon").
 -behavior(gen_server).
 
@@ -32,11 +32,11 @@ terminate(_Reason, _State) -> ok.
 %                                                  true = on false = off
 % When you are using a long calcuation the state is = {ContinueFlag, {Inside, Total}}
 
-handle_cast({long, ManagerPid, Offset}, State) ->
+handle_cast({mc, ManagerPid, Offset}, State) ->
   Jump = 1000000,
   {Prev_Total, Prev_Inside} = State,
   Result = monte_carlo(Jump, Prev_Total + Jump * Offset),
-  gen_server:cast(ManagerPid, {result, Result}),
+  gen_server:cast(ManagerPid, {result_mc, Result}),
   gen_server:cast(self(), {long, ManagerPid, Offset}),
   {_, Running_Inside} = Result,
   {noreply, {Prev_Total + Jump, Prev_Inside + Running_Inside}}.
@@ -45,6 +45,10 @@ handle_call({}, _From, State) ->
   {reply, State, State}.
 
 
+
+
+
+%% Monte Carlo Method
 
 halton(_, 0, Result, _) ->
   Result;
@@ -79,3 +83,6 @@ monte_carlo(Jump, CurrentPoint) ->
   All_points = generate_points(CurrentPoint, CurrentPoint + Jump),
   Inside_Points = count_points(All_points),
   {Jump, Inside_Points}.
+
+
+%% Monte Carlo Method

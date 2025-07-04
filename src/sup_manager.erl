@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 29. Jun 2025 22:20
 %%%-------------------------------------------------------------------
--module(sup_manager_long).
+-module(sup_manager).
 -behavior(supervisor).
 -author("Birdh").
 
@@ -21,16 +21,22 @@ init([]) ->
         ok,
         {{one_for_one, 1, 60},
             [
-                {gen_manager_long, {gen_manager_long, start_link, []},
+                {gen_manager, {gen_manager, start_link, []},
                     permanent,
                     5000,
                     worker,
-                    [gen_manager_long]},
-                {sup_worker_long, {sup_worker_long, start_link, []},
+                    [gen_manager]},
+                {sup_worker_mc, {sup_worker_mc, start_link, []},
                     permanent,
                     5000,
                     supervisor,
-                    [sup_worker_long]}
+                    [sup_worker_mc]},
+                {sup_worker_agm, {sup_worker_agm, start_link, []},
+                    permanent,
+                    5000,
+                    supervisor,
+                    [sup_worker_agm]}
+                
             ]
         }
     }.

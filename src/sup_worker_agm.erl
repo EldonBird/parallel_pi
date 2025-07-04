@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 29. Jun 2025 22:20
 %%%-------------------------------------------------------------------
--module(sup_worker_long).
+-module(sup_worker_agm).
 -author("Birdh").
 -behavior(supervisor).
 
@@ -24,10 +24,10 @@ init([]) ->
     SupFlags = {simple_one_for_one, 1, 5},
     ChildSpec = {
         undefined,
-        {gen_worker_long, start_link, []},
+        {gen_worker_agm, start_link, []},
         temporary,
         5000,
         worker,
-        [gen_worker_long]
+        [gen_worker_agm]
     },
     {ok, {SupFlags, [ChildSpec]}}.
