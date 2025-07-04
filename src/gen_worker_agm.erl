@@ -24,9 +24,7 @@ start_link() ->
 terminate(_Reason, _State) -> ok.
 
 
-handle_cast({iteration, ManagerPid}, State) ->
-
-    {An, Bn, Pn, Tn, N} = State,
+handle_cast({iteration, ManagerPid, Iterations}, {An, Bn, Pn, Tn, N}) when N < Iterations ->
     
     An1 = an(An, Bn),
     Bn1 = bn(An, Bn),
@@ -36,9 +34,16 @@ handle_cast({iteration, ManagerPid}, State) ->
     Pi = pi(An1, Bn1, Tn1),
     
     gen_server:cast(ManagerPid, {result_agm, {Pi, N+1}}),
+    gen_server:cast(self(), {iteration, ManagerPid, Iterations}),
 
-    {noreply, {An1, Bn1, Pn1, Tn1, N+1}}.
-    
+    {noreply, {An1, Bn1, Pn1, Tn1, N+1}};
+handle_cast({iteration, ManagerPid, _}, State) ->
+
+    {An, Bn, _, Tn, N} = State,
+    Pi = pi(An, Bn, Tn),
+    gen_server:cast(ManagerPid, {result_agm, {Pi, N}}),
+    {noreply, State}.
+
 
 
 handle_call({get}, _From, State) ->
@@ -58,7 +63,14 @@ pn(Pn) ->
     2 * Pn.
 
 tn(Tn, Pn, An, An1) ->
-    Tn - Pn * math:pow((An1 - An), 2).
+    
+    By = An1 - An,
+    
+    Tn - Pn * (By * By).
 
 pi(An1, Bn1, Tn1) ->
-    math:pow((An1 + Bn1), 2) / (4 * Tn1).
+    
+    By = An1 + Bn1,
+
+    (By * By) / (4 * Tn1).
+

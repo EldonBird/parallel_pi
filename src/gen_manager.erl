@@ -18,7 +18,7 @@
     terminate/2,
     start_link/0,
     run_mc/1,
-    run_agm/0
+    run_agm/1
 ]).
 
 
@@ -36,8 +36,8 @@ start_link() ->
 run_mc(NumberWorkers) ->
     gen_server:cast(?MODULE, {run, NumberWorkers}).
 
-run_agm() ->
-    gen_server:cast(?MODULE, {agm}).
+run_agm(Iterations) ->
+    gen_server:cast(?MODULE, {agm, Iterations}).
 
 
 handle_cast({mc, Number}, _) ->
@@ -45,12 +45,10 @@ handle_cast({mc, Number}, _) ->
     assign_work_mc(Workers, 1),
     {noreply, {Workers, {0, 0}}};
 
-handle_cast({agm}, _) ->
-    
+handle_cast({agm, Iterations}, _) ->
     Number = 1,
-    
     Workers = [start_worker_agm() || _ <- lists:seq(1, Number)],
-    assign_work_agm(Workers),
+    assign_work_agm(Workers, Iterations),
     {noreply, {Workers, {0, 0}}};
 
 handle_cast({result_mc, Result}, State) ->
@@ -106,11 +104,11 @@ calculate_pi(Total, Inside) ->
 % Algorithmic Geometric Mean
 
 % This tells it to perform 1 iteration 
-assign_work_agm([]) ->
+assign_work_agm([], _) ->
     ok;
-assign_work_agm([Head|Tail]) ->
-    gen_server:cast(Head, {iteration, self()}),
-    assign_work_agm(Tail).
+assign_work_agm([Head|Tail], Iterations) ->
+    gen_server:cast(Head, {iteration, self(), Iterations}),
+    assign_work_agm(Tail, Iterations).
     
 
 
