@@ -13,5 +13,5 @@
 -export([start/0]).
 
 start() ->
-    sup_manager_long:start_link().
+    sup_manager:start_link().
 

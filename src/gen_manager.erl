@@ -17,7 +17,8 @@
     handle_cast/2,
     terminate/2,
     start_link/0,
-    run/1
+    run_mc/1,
+    run_agm/0
 ]).
 
 
@@ -32,8 +33,11 @@ terminate(_Reason, _State) ->
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
-run(NumberWorkers) ->
+run_mc(NumberWorkers) ->
     gen_server:cast(?MODULE, {run, NumberWorkers}).
+
+run_agm() ->
+    gen_server:cast(?MODULE, {agm}).
 
 
 handle_cast({mc, Number}, _) ->
@@ -41,9 +45,12 @@ handle_cast({mc, Number}, _) ->
     assign_work_mc(Workers, 1),
     {noreply, {Workers, {0, 0}}};
 
-handle_cast({agm, Number}, _) ->
+handle_cast({agm}, _) ->
+    
+    Number = 1,
+    
     Workers = [start_worker_agm() || _ <- lists:seq(1, Number)],
-    assign_work(Workers, 1),
+    assign_work_agm(Workers),
     {noreply, {Workers, {0, 0}}};
 
 handle_cast({result_mc, Result}, State) ->
@@ -86,7 +93,7 @@ assign_work_mc([], _) ->
     ok;
 assign_work_mc([Head | Tail], Offset) ->
     gen_server:cast(Head, {long, self(), Offset}),
-    assign_work(Tail, Offset+1).
+    assign_work_mc(Tail, Offset+1).
 
 
 calculate_pi(_, 0) ->
@@ -102,7 +109,7 @@ calculate_pi(Total, Inside) ->
 assign_work_agm([]) ->
     ok;
 assign_work_agm([Head|Tail]) ->
-    gen_server:cast(Head, {iteration}),
+    gen_server:cast(Head, {iteration, self()}),
     assign_work_agm(Tail).
     
 
